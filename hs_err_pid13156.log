@@ -1,0 +1,36 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_STACK_OVERFLOW (0xc00000fd) at pc=0x00007ffa1d19e573, pid=13156, tid=204848
+#
+# JRE version: OpenJDK Runtime Environment (14.0.2+12) (build 14.0.2+12-46)
+# Java VM: OpenJDK 64-Bit Server VM (14.0.2+12-46, mixed mode, sharing, tiered, compressed oops, g1 gc, windows-amd64)
+# Problematic frame:
+# V  [jvm.dll+0x33e573]
+#
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Xmx8g -Dfile.encoding=windows-1252 -Duser.country=US -Duser.language=en -Duser.variant MainFazon
+
+Host: AMD Ryzen 5 4500U with Radeon Graphics         , 6 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.804)
+Time: Wed Apr  7 18:37:31 2021 Central European Daylight Time elapsed time: 53 seconds (0d 0h 0m 53s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000025f5c4c8000):  JavaThread "Thread-65976" [_thread_in_vm, id=204848, stack(0x000000846b800000,0x000000846b900000)]
+
+Stack: [0x000000846b800000,0x000000846b900000],  sp=0x000000846b8ff160,  free space=1020k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x33e573]
+V  [jvm.dll+0x5f89c2]
+V  [jvm.dll+0x33f06c]
+V  [jvm.dll+0x33f2f7]
+V  [jvm.dll+0x3b4f81]
+V  [jvm.dll+0x7070cd]
+V  [jvm.dll+0x6ffeda]
