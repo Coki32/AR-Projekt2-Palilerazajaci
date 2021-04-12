@@ -30,8 +30,7 @@ public class MaybeLessNaiveSorter<T extends Comparable<T>> extends NaiveSorter<T
             try {
                 t1.join();
                 t2.join();
-            } catch (InterruptedException ex) {
-            }
+            } catch (InterruptedException ignored) { }
 
             //merge halves
             int il = 0, ir = 0, ia = 0;

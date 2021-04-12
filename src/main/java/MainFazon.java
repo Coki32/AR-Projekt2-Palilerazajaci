@@ -1,12 +1,6 @@
-import sorters.AllThreadSorter;
-import sorters.MaybeLessNaiveSorter;
-import sorters.NaiveSorter;
-import sorters.SorterBase;
+import sorters.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,26 +17,62 @@ public class MainFazon {
         return System.currentTimeMillis() - t1;
     }
 
+    static class SorerInfo{
+        SorterBase<Double> sorter;
+        String name;
+
+        public SorerInfo(SorterBase<Double> sorter, String name) {
+            this.sorter = sorter;
+            this.name = name;
+        }
+
+        public SorterBase<Double> getSorter() {
+            return sorter;
+        }
+    }
+
     public static void main(String[] args) {
+        int n = 2;
+        var sorters = new SorerInfo[]{
+                //new SorerInfo(new NaiveSorter<>(),"merge"),
+                //new SorerInfo(new SelectionSorter<>(),"select"),
+                //new SorerInfo(new MaybeLessNaiveSorter<>(),"less naive"),
+                //new SorerInfo(new AnotherNaiveSorter<>(),"super naive"),
+                new SorerInfo(new AllThreadSorter<>(),"all threads"),
+                new SorerInfo(new AllThreadHybridSorter<>(),"all hybrid")
+        };
+        HashMap<String,HashMap<Integer,List<Integer>>> vremena = new HashMap<>();//<Ime, <BrojElem, Vremena[]>>
+        for(var s: sorters) vremena.put(s.name, new HashMap<>());
+        for (int k=0; k<10; k++) {
+            n=1000000;
+            for (int i = 0; i < 5; i++) {
+                for(int reps = 0; reps<3; reps++) {
+                    var niz = getNRandomDoubles(n);
+                    //System.out.println("Pokrecem sortiranje za " + n + " elemenata:");
+                    for (var info : sorters) {
+                        var kopija = new ArrayList<>(niz);
+                        var time = timeIt(() -> info.getSorter().sort(kopija));
+                        if (!vremena.get(info.name).containsKey(n))
+                            vremena.get(info.name).put(n, new ArrayList<>());
+                        vremena.get(info.name).get(n).add((int) time);
+                        //System.out.println(String.format("[%s]: %d", info.name, time));
+                    }
+                }
+                n += 100000;
+            }
+        }
+        vremena.forEach((naziv, listaVremena)->{
+            System.out.println(naziv);
+            listaVremena.forEach((_n,vremenaUMs)->{
+                var avgVrijeme = vremenaUMs.stream().mapToInt(i->(int)i).average().orElse(0.0);
+                System.out.println(String.format("Za %d elemenata prosjek je %f", _n, avgVrijeme));
+            });
+        });
+    }
 
-//        SorterBase<Double> sorter1 = new NaiveSorter<>();
-        SorterBase<Double> sorter2 = new MaybeLessNaiveSorter<>();
-        SorterBase<Double> sorter3 = new AllThreadSorter<>();
-
-        int n = 1000000;
-
-        List<Double> nizic1 = getNRandomDoubles(n);
-        List<Double> nizic2 = new ArrayList<>(nizic1);
-        List<Double> nizic3 = new ArrayList<>(nizic2);
-
-//        var naive = timeIt(()->sorter1.sort(nizic1));
-        //var supernaive = timeIt(()->sorter2.sort(nizic2));
-        var javaBog = timeIt(()-> nizic2.sort(Double::compareTo));
-        var maybenaive = timeIt(()->sorter3.sort(nizic3));
-
-//        System.out.println("Obicni: "+naive);
-        //System.out.println("Paralelosi: "+supernaive);
-        System.out.println("MozdaBolje: "+maybenaive);
-        System.out.println("java internal: "+javaBog);
+    public static void main2(String[] args) {
+        var nizic = getNRandomDoubles(10).stream().map(d->(double)(Math.round(d*10))).collect(Collectors.toList());
+        new SelectionSorter<Double>().sort(nizic);
+        System.out.println(nizic);
     }
 }
