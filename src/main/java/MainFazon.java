@@ -1,8 +1,6 @@
 import sorters.*;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,11 +17,11 @@ public class MainFazon {
         return System.currentTimeMillis() - t1;
     }
 
-    static class SorerInfo{
+    static class SorterInfo {
         SorterBase<Double> sorter;
         String name;
 
-        public SorerInfo(SorterBase<Double> sorter, String name) {
+        public SorterInfo(SorterBase<Double> sorter, String name) {
             this.sorter = sorter;
             this.name = name;
         }
@@ -36,12 +34,12 @@ public class MainFazon {
     public static void main(String[] args) {
         int n = 10;
         int factor = 5;
-        var sorters = new SorerInfo[]{
-                new SorerInfo(new NaiveSorter<>(),"merge"),
-                new SorerInfo(new HybridSorter<>(),"merge_hybrid"),
-                new SorerInfo(new MaybeLessNaiveSorter<>(),"merge_two_thread"),
-                new SorerInfo(new AllThreadSorter<>(),"merge_n_threads"),
-                new SorerInfo(new AllThreadHybridSorter<>(),"merge_n_threads_hybrid"),
+        var sorters = new SorterInfo[]{
+                new SorterInfo(new NaiveSorter<>(),"merge"),
+                new SorterInfo(new HybridSorter<>(),"merge_hybrid"),
+                new SorterInfo(new MaybeLessNaiveSorter<>(),"merge_two_thread"),
+                new SorterInfo(new AllThreadSorter<>(),"merge_n_threads"),
+                new SorterInfo(new AllThreadHybridSorter<>(),"merge_n_threads_hybrid"),
         };
         System.out.println("n,"+Arrays.stream(sorters).map(si->si.name).reduce((pr,cu)->pr+","+cu).orElse(""));
         for(int inkrement = 0; inkrement<13; inkrement++){
