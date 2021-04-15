@@ -1,6 +1,8 @@
 import sorters.*;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,42 +34,60 @@ public class MainFazon {
     }
 
     public static void main(String[] args) {
-        int n = 2;
+        int n = 10;
+        int factor = 5;
         var sorters = new SorerInfo[]{
-                //new SorerInfo(new NaiveSorter<>(),"merge"),
-                //new SorerInfo(new SelectionSorter<>(),"select"),
-                //new SorerInfo(new MaybeLessNaiveSorter<>(),"less naive"),
-                //new SorerInfo(new AnotherNaiveSorter<>(),"super naive"),
-                new SorerInfo(new AllThreadSorter<>(),"all threads"),
-                new SorerInfo(new AllThreadHybridSorter<>(),"all hybrid")
+                new SorerInfo(new NaiveSorter<>(),"merge"),
+                new SorerInfo(new HybridSorter<>(),"merge_hybrid"),
+                new SorerInfo(new MaybeLessNaiveSorter<>(),"merge_two_thread"),
+                new SorerInfo(new AllThreadSorter<>(),"merge_n_threads"),
+                new SorerInfo(new AllThreadHybridSorter<>(),"merge_n_threads_hybrid"),
         };
-        HashMap<String,HashMap<Integer,List<Integer>>> vremena = new HashMap<>();//<Ime, <BrojElem, Vremena[]>>
-        for(var s: sorters) vremena.put(s.name, new HashMap<>());
-        for (int k=0; k<10; k++) {
-            n=1000000;
-            for (int i = 0; i < 5; i++) {
-                for(int reps = 0; reps<3; reps++) {
-                    var niz = getNRandomDoubles(n);
-                    //System.out.println("Pokrecem sortiranje za " + n + " elemenata:");
-                    for (var info : sorters) {
-                        var kopija = new ArrayList<>(niz);
-                        var time = timeIt(() -> info.getSorter().sort(kopija));
-                        if (!vremena.get(info.name).containsKey(n))
-                            vremena.get(info.name).put(n, new ArrayList<>());
-                        vremena.get(info.name).get(n).add((int) time);
-                        //System.out.println(String.format("[%s]: %d", info.name, time));
-                    }
+        System.out.println("n,"+Arrays.stream(sorters).map(si->si.name).reduce((pr,cu)->pr+","+cu).orElse(""));
+        for(int inkrement = 0; inkrement<13; inkrement++){
+
+            double[] rezultati = new double[sorters.length];//za ovo N
+            Arrays.fill(rezultati,0.0);
+
+            for(int reps = 0; reps<10; reps++) {//broj ponavljanja
+                var niz = getNRandomDoubles(n);//napravi toliko double-ova
+                for (int sorterIdx=0; sorterIdx<sorters.length; sorterIdx++) {//za svaki sorter
+                    var kopija = new ArrayList<>(niz);//kopiraj prije sorta
+                    int finalSorterIdx = sorterIdx;
+                    var time = timeIt(()->sorters[finalSorterIdx].getSorter().sort(kopija));
+                    rezultati[sorterIdx] += ((double)time)/10;//bice 10 ponavljanja
                 }
-                n += 100000;
             }
+
+            System.out.println(n+","+Arrays.stream(rezultati).map(d->(double)Math.round(d*1000)/1000).mapToObj(Double::toString).reduce((pr, cu)->pr+","+cu).orElse(""));
+            n*=factor;
+            factor = factor==5 ? 2 : 5;
         }
-        vremena.forEach((naziv, listaVremena)->{
-            System.out.println(naziv);
-            listaVremena.forEach((_n,vremenaUMs)->{
-                var avgVrijeme = vremenaUMs.stream().mapToInt(i->(int)i).average().orElse(0.0);
-                System.out.println(String.format("Za %d elemenata prosjek je %f", _n, avgVrijeme));
-            });
-        });
+//        for (int k=0; k<10; k++) {
+//            n=1000000;
+//            for (int i = 0; i < 5; i++) {
+//                for(int reps = 0; reps<3; reps++) {
+//                    var niz = getNRandomDoubles(n);
+//                    //System.out.println("Pokrecem sortiranje za " + n + " elemenata:");
+//                    for (var info : sorters) {
+//                        var kopija = new ArrayList<>(niz);
+//                        var time = timeIt(() -> info.getSorter().sort(kopija));
+//                        if (!vremena.get(info.name).containsKey(n))
+//                            vremena.get(info.name).put(n, new ArrayList<>());
+//                        vremena.get(info.name).get(n).add((int) time);
+//                        //System.out.println(String.format("[%s]: %d", info.name, time));
+//                    }
+//                }
+//                n += 100000;
+//            }
+//        }
+//        vremena.forEach((naziv, listaVremena)->{
+//            System.out.println(naziv);
+//            listaVremena.forEach((_n,vremenaUMs)->{
+//                var avgVrijeme = vremenaUMs.stream().mapToInt(i->(int)i).average().orElse(0.0);
+//                System.out.println(String.format("Za %d elemenata prosjek je %f", _n, avgVrijeme));
+//            });
+//        });
     }
 
     public static void main2(String[] args) {
