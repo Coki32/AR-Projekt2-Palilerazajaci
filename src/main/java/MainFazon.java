@@ -51,10 +51,12 @@ public class MainFazon {
 
             for(int reps = 0; reps<10; reps++) {//broj ponavljanja
                 var niz = getNRandomDoubles(n);//napravi toliko double-ova
+                var kopija = new ArrayList<Double>(n);
                 for (int sorterIdx=0; sorterIdx<sorters.length; sorterIdx++) {//za svaki sorter
-                    var kopija = new ArrayList<>(niz);//kopiraj prije sorta
-                    int finalSorterIdx = sorterIdx;
-                    var time = timeIt(()->sorters[finalSorterIdx].getSorter().sort(kopija));
+                    kopija.clear();
+                    kopija.addAll(niz);//kopiraj prije sorta
+                    var sorter = sorters[sorterIdx].getSorter();
+                    var time = timeIt(()->sorter.sort(kopija));
                     rezultati[sorterIdx] += ((double)time)/10;//bice 10 ponavljanja
                 }
             }
@@ -63,31 +65,6 @@ public class MainFazon {
             n*=factor;
             factor = factor==5 ? 2 : 5;
         }
-//        for (int k=0; k<10; k++) {
-//            n=1000000;
-//            for (int i = 0; i < 5; i++) {
-//                for(int reps = 0; reps<3; reps++) {
-//                    var niz = getNRandomDoubles(n);
-//                    //System.out.println("Pokrecem sortiranje za " + n + " elemenata:");
-//                    for (var info : sorters) {
-//                        var kopija = new ArrayList<>(niz);
-//                        var time = timeIt(() -> info.getSorter().sort(kopija));
-//                        if (!vremena.get(info.name).containsKey(n))
-//                            vremena.get(info.name).put(n, new ArrayList<>());
-//                        vremena.get(info.name).get(n).add((int) time);
-//                        //System.out.println(String.format("[%s]: %d", info.name, time));
-//                    }
-//                }
-//                n += 100000;
-//            }
-//        }
-//        vremena.forEach((naziv, listaVremena)->{
-//            System.out.println(naziv);
-//            listaVremena.forEach((_n,vremenaUMs)->{
-//                var avgVrijeme = vremenaUMs.stream().mapToInt(i->(int)i).average().orElse(0.0);
-//                System.out.println(String.format("Za %d elemenata prosjek je %f", _n, avgVrijeme));
-//            });
-//        });
     }
 
     public static void main2(String[] args) {
